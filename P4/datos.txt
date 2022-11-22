@@ -1,0 +1,1 @@
+Las coordenadas deben ser potencia de dos

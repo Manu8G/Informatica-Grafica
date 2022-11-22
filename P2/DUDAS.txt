@@ -1,0 +1,23 @@
+beethoven ok
+big_dodge ok
+Budda no carga el archivo da error
+bunny no muestra nada
+bunny2 no muestra nada
+castillo ok
+cow da error
+Cubo error muy raro
+dentadura ok
+fichero1 ok pero muy raro nose q es
+footbones ok
+perfil1 no muestra nada
+shark error raro 2
+test error raro 2
+topmod error
+topmod-basic error
+
+
+
+
+
+
+
