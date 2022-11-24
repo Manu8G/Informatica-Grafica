@@ -29,28 +29,16 @@ modulo modelo.c
     Función Idle
 
 */
-/*DUDAS
-ESPECULAR Y DIFUSA:
-  Añadiremos variables a la clase malla para almacenar las propiedades de material in-
-  cluyendo al menos: reflectividad difusa y especular. Crearemos métodos para asignarlos y
-  modificaremos el método de dibujo para usar el material asignado. Si no se incluye reflecti-
-  vidad ambiente se usará para ella el valor de la reflectividad difusa.
-  Comprueba que funciona correctamente modificando las reflectividades de los objetos
-  de la escena.
 
-La componente v se calcula en función del desplazamiento en el perfil. Para ello, calcu-
-lamos la distancia, d i de cada vértice al inicio del perfil (este valor es el mismo para todos
-los vértices que se obtienen girando el mismo vértice del perfil):
-  k=i−1
-  d i =
-  ∑
-  distancia(V k ,V k + 1)
-  k=0
-  donde V k es el vértice k-esimo del perfil.
-  COMO SE HACE ESTA SUMATORIA, CON QUE VALORES
-
-RESTO DEL PDF, como se usa las texturas a la hora de dubijar??
+/*
+DUDAS
+  -Tengo variables necesarias para los calculos en la clase de revolucion, por lo cual he tenido que poner un nuevo metodo
+   de dibujo en la clase de revolucion por lo que esto estaria bien o tengo que usar un metodo de dibujo de la clase malla
+   porque si modifico los de malla a la hora de dibujar un beethoven me va a dar fallo porque no tiene textura
+  -
 */
+
+
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -210,12 +198,6 @@ class Cubo:Objeto3D{
 
 Cubo c1(10);
 
-void
-initModel ()
-{
-  c1.activarTextura();
-}
-
 typedef struct Vertice{
   float x, y, z;
   float n1, n2, n3;
@@ -230,18 +212,20 @@ class Malla:public Objeto3D{
   public:
     vector<Vertice> vertices_ply;
     vector<Cara> caras_ply;
-    float difusa[3];
-    float especular[3];
+    float difusa[4]; 
+    float especular[4];
     vector<pair<float,float>> coordenadasTextura;
-  
+    int luz;
   Malla(){}
   
   Malla(char nombre_archivo[30]){
     vector<float> vertices;
     vector<int> caras;
-    especular[0]=difusa[0]=0.0;
-    especular[1]=difusa[1]=0.0;
-    especular[2]=difusa[2]=0.0;
+    luz=1;
+    especular[0]=difusa[0]=1.0;
+    especular[1]=difusa[1]=1.0; 
+    especular[2]=difusa[2]=1.0;
+    especular[3]=difusa[3]=1.0;
     ply::read(nombre_archivo, vertices, caras);
 
     coordenadasTextura.resize(vertices.size());
@@ -258,6 +242,14 @@ class Malla:public Objeto3D{
     traduce_caras(caras);
     calcula_normal_cara();
     calcular_normal_vertice();
+  }
+
+  void cambiarLuz(){
+    if(luz==0){
+      luz=1;
+    }else{
+      luz=0;
+    }
   }
 
   void setDifusa(float * a){
@@ -402,21 +394,47 @@ class Revolucion:public Malla{
   public:
     int instancias;
     int num_vertices;
+    vector<float> distancias;
+    float distanciaTotal;
 
   Revolucion(char nombre_archivo[30], int num_instancias){
     vector<float> vertices;
     ply::read_vertices(nombre_archivo, vertices);
     instancias=num_instancias;
+    distanciaTotal=0;
     num_vertices=vertices.size()/3;
+    calcularV(vertices);
     generar_vertices(vertices);
     generar_caras();
     calcula_normal_cara();
     calcular_normal_vertice();
   }
 
+  void activarTextura(const char * nombre){
+    unsigned char *image = asignaTextura(nombre);
+    
+    glGenTextures(1 , &texId);
+    glBindTexture(GL_TEXTURE_2D, texId);//llamar
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ancho, alto, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+  }
+
+  void calcularV(vector<float> vertices){
+    distancias.push_back(0);
+    for(int i=3; i< vertices.size(); i+=3){
+      float aux=sqrt(pow((vertices[i-1]-vertices[i-3]),2)+pow((vertices[i]-vertices[i-2]),2));
+      distanciaTotal+=aux;
+      distancias.push_back(aux+distancias[distancias.size()-1]);
+    }
+  }
+
   //Generamos los vertices de la figura a partir de los iniciales
   void generar_vertices(vector<float> vertices){
     //Añadimos los vertices que obtenemos del archivo al vector de vertices
+    int dmax=vertices[vertices.size()-2];
     for(int i=0; i<vertices.size(); i+=3){
       Vertice v;
       v.x=vertices[i];
@@ -425,10 +443,11 @@ class Revolucion:public Malla{
       vertices_ply.push_back(v);
       //Generamos las componentes de la textura de los vertices iniciales
       pair<float, float> p;
-      p.first=0; //DUDA-AQUI Q IRIA??? ESTOS NO TIENEN TEXTURA PQ LOS PONEN CON LOS VERTICES ULTIMO REGENERADOS??
-      p.second=0;
+      p.first=0;
+      p.second=distancias[i%3]/distanciaTotal;
       coordenadasTextura.push_back(p);
     }
+
     //Generamos los nuevos vertices de la figura en funcion de los primeros
     int tam=vertices_ply.size();
     for(int i=0; i<=instancias; i++){
@@ -442,18 +461,10 @@ class Revolucion:public Malla{
         //Generamos las componentes de la textura de los vertices generados
         pair<float, float> p;
         p.first=radianes/360;
-        p.second=0;
+        p.second=coordenadasTextura[j].second;
         coordenadasTextura.push_back(p);
       }  
     }
-
-    /*
-    Componente u de la coordenada de textura, que recorre la imagen en sentido horizontal
-    ui=alfai/360
-    La componente v se calcula  en funcion del desplazamiento en el perfil
-    vi=di/dmax
-    di=sumatorio(distancia(vk,vk+1)) desde k=0, k=i-1
-    */
   }
   
   void generar_caras(){
@@ -474,7 +485,25 @@ class Revolucion:public Malla{
       }
     }
   }
+
+  void draw4(){ //Este draw es el original de la P1
+    glBegin (GL_TRIANGLES);//gl_triangle
+    {				    
+      for(int i=0; i<caras_ply.size(); i++){
+          glNormal3f (caras_ply[i].n1, caras_ply[i].n2, caras_ply[i].n3);	
+          glTexCoord2f(coordenadasTextura[caras_ply[i].p1].first,coordenadasTextura[caras_ply[i].p1].second);
+          glVertex3f (vertices_ply[caras_ply[i].p1].x, vertices_ply[caras_ply[i].p1].y, vertices_ply[caras_ply[i].p1].z);
+          glTexCoord2f(coordenadasTextura[caras_ply[i].p2].first,coordenadasTextura[caras_ply[i].p2].second);
+          glVertex3f (vertices_ply[caras_ply[i].p2].x, vertices_ply[caras_ply[i].p2].y, vertices_ply[caras_ply[i].p2].z);
+          glTexCoord2f(coordenadasTextura[caras_ply[i].p3].first,coordenadasTextura[caras_ply[i].p3].second);
+          glVertex3f (vertices_ply[caras_ply[i].p3].x, vertices_ply[caras_ply[i].p3].y, vertices_ply[caras_ply[i].p3].z);  
+      }
+    }
+    glEnd ();
+  }
+
 };
+
 
 class Ejes:Objeto3D 
 { 
@@ -506,8 +535,28 @@ void draw( )
 
 Ejes ejesCoordenadas;
 Malla m1("beethoven");  
-Malla m2("big_dodge");
-Revolucion r1("perfil", 20);
+Malla m2("beethoven");
+Revolucion lata1("lata-pcue", 20);
+Revolucion base1("lata-pinf", 20);
+Revolucion tapa1("lata-psup", 20);
+
+Revolucion lata2("lata-pcue", 20);
+Revolucion base2("lata-pinf", 20);
+Revolucion tapa2("lata-psup", 20);
+
+Revolucion lata3("lata-pcue", 20);
+Revolucion base3("lata-pinf", 20);
+Revolucion tapa3("lata-psup", 20);
+
+void
+initModel ()
+{
+  c1.activarTextura();
+  lata1.activarTextura("cola.jpg");
+  lata2.activarTextura("amstel.jpg");
+  lata3.activarTextura("galaxia.jpg");
+}
+
 
 void Dibuja (void)
 {
@@ -528,34 +577,51 @@ void Dibuja (void)
   glLightfv (GL_LIGHT0, GL_POSITION, pos);	// Declaracion de luz. Colocada aqui esta fija en la escena
 
   ejesCoordenadas.draw();			// Dibuja los ejes
-  /*
-  //Pintamos el peon
-  glMaterialfv (GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color);
-  glScaled(1.5,1.5,1.5);
-  glShadeModel(GL_SMOOTH);
-  r1.draw3();
-  //Pintamos Beethoven
-  glMaterialfv (GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color2);
-  glScaled(0.5,0.5,0.5);
-  glTranslatef(-7.5,0.0,0.0);
-  glShadeModel(GL_SMOOTH);
-  m1.draw3();
-  //Pintamos el coche
-  */
-  /*
-  glMaterialfv( GL_FRONT, GL_SPECULAR, m2.getEspecular()) ;
-  glTranslatef(17.5,0.0,0.0);
-  glShadeModel(GL_FLAT);
-  m2.draw2();
-  */
   
+  //Pintamos lata1
+  glPushMatrix();
+  glScaled(3,3,3);
+  glTranslated(2,0,0);
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, c1.getId());
+  lata1.draw4();
+  glDisable(GL_TEXTURE_2D);
+  glPopMatrix();
+  //Pintamos lata2
+  glPushMatrix();
+  glScaled(3,3,3);
+  glTranslated(-2,0,0);
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, c1.getId());
+  lata2.draw4();
+  glDisable(GL_TEXTURE_2D);
+  glPopMatrix();
+  //Pintamos lata3
+  glPushMatrix();
+  glScaled(3,3,3);
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, c1.getId());
+  lata3.draw4();
+  glDisable(GL_TEXTURE_2D);
+  glPopMatrix();
+  
+  /*
   glPushMatrix();
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, c1.getId());
   c1.draw();
   glDisable(GL_TEXTURE_2D);
   glPopMatrix();
-  
+  */
+
+  /*
+  if(luz==0){
+        glMaterialfv(GL_FRONT, GL_SPECULAR, especular);
+      }else{
+        glMaterialfv(GL_FRONT, GL_SPECULAR, difusa);
+      }
+  */
+
   glPopMatrix ();		// Desapila la transformacion geometrica
 
   glutSwapBuffers ();		// Intercambia el buffer de dibujo y visualizacion
