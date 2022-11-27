@@ -55,5 +55,8 @@ class Objeto3D
 		sol=LeerArchivoJPEG(nombreArchivo, ancho, alto); //PASAR POR REFERENCIA???? NO COMPILA
 		return sol;
 	};
+	GLuint getId(){
+		return texId;
+	}
 
 } ; 

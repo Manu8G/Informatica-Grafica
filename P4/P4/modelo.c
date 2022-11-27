@@ -73,7 +73,7 @@ class Cubo:Objeto3D{
   } 
 
   void activarTextura(){
-    unsigned char *image = asignaTextura("dado.jpg");
+    unsigned char *image = asignaTextura("cola.jpg");
     
     glGenTextures(1 , &texId);
     glBindTexture(GL_TEXTURE_2D, texId);//llamar
@@ -82,11 +82,7 @@ class Cubo:Objeto3D{
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ancho, alto, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-  }
-
-  GLuint getId(){
-		return texId;
-	}
+  } 
 
   void draw( )
   {
@@ -396,8 +392,12 @@ class Revolucion:public Malla{
     int num_vertices;
     vector<float> distancias;
     float distanciaTotal;
+    bool esTapa;
+    bool esBase;
 
-  Revolucion(char nombre_archivo[30], int num_instancias){
+  Revolucion(char nombre_archivo[30], int num_instancias, bool tapa, bool base){
+    esTapa=tapa;
+    esBase=base;
     vector<float> vertices;
     ply::read_vertices(nombre_archivo, vertices);
     instancias=num_instancias;
@@ -425,13 +425,24 @@ class Revolucion:public Malla{
   void calcularV(vector<float> vertices){
     distancias.push_back(0);
     for(int i=3; i< vertices.size(); i+=3){
-      float aux=sqrt(pow((vertices[i-1]-vertices[i-3]),2)+pow((vertices[i]-vertices[i-2]),2));
+      float aux=sqrt(pow((vertices[i+1]-vertices[i-2]),2)+pow((vertices[i]-vertices[i-3]),2));
       distanciaTotal+=aux;
-      distancias.push_back(aux+distancias[distancias.size()-1]);
+      distancias.push_back(distanciaTotal);
     }
   }
 
   //Generamos los vertices de la figura a partir de los iniciales
+  
+  
+  
+  
+  
+  //POR AQUI----Cambiar valores a la mitad dependiendo de la tapa o la base
+  
+  
+  
+  
+  
   void generar_vertices(vector<float> vertices){
     //Añadimos los vertices que obtenemos del archivo al vector de vertices
     int dmax=vertices[vertices.size()-2];
@@ -444,10 +455,9 @@ class Revolucion:public Malla{
       //Generamos las componentes de la textura de los vertices iniciales
       pair<float, float> p;
       p.first=0;
-      p.second=distancias[i%3]/distanciaTotal;
+      p.second=distancias[i/3]/distanciaTotal;
       coordenadasTextura.push_back(p);
     }
-
     //Generamos los nuevos vertices de la figura en funcion de los primeros
     int tam=vertices_ply.size();
     for(int i=0; i<=instancias; i++){
@@ -460,7 +470,7 @@ class Revolucion:public Malla{
         vertices_ply.push_back(v);
         //Generamos las componentes de la textura de los vertices generados
         pair<float, float> p;
-        p.first=radianes/360;
+        p.first=((radianes*180)/M_PI)/360;
         p.second=coordenadasTextura[j].second;
         coordenadasTextura.push_back(p);
       }  
@@ -490,7 +500,8 @@ class Revolucion:public Malla{
     glBegin (GL_TRIANGLES);//gl_triangle
     {				    
       for(int i=0; i<caras_ply.size(); i++){
-          glNormal3f (caras_ply[i].n1, caras_ply[i].n2, caras_ply[i].n3);	
+          //glNormal3f (caras_ply[i].n1, caras_ply[i].n2, caras_ply[i].n3);	
+          glNormal3f (1,1,1);	
           glTexCoord2f(coordenadasTextura[caras_ply[i].p1].first,coordenadasTextura[caras_ply[i].p1].second);
           glVertex3f (vertices_ply[caras_ply[i].p1].x, vertices_ply[caras_ply[i].p1].y, vertices_ply[caras_ply[i].p1].z);
           glTexCoord2f(coordenadasTextura[caras_ply[i].p2].first,coordenadasTextura[caras_ply[i].p2].second);
@@ -534,27 +545,29 @@ void draw( )
 } ; 
 
 Ejes ejesCoordenadas;
-Malla m1("beethoven");  
-Malla m2("beethoven");
-Revolucion lata1("lata-pcue", 20);
-Revolucion base1("lata-pinf", 20);
-Revolucion tapa1("lata-psup", 20);
+/*Malla m1("beethoven");  
+Malla m2("beethoven");*/
+Revolucion lata1("lata-pcue", 20, false, false);
+Revolucion base1("lata-pinf", 20, false, true);
+Revolucion tapa1("lata-psup", 20, true, false);
 
-Revolucion lata2("lata-pcue", 20);
-Revolucion base2("lata-pinf", 20);
-Revolucion tapa2("lata-psup", 20);
+//Revolucion lata2("lata-pcue", 20);
+/*Revolucion base2("lata-pinf", 20);
+Revolucion tapa2("lata-psup", 20);*/
 
-Revolucion lata3("lata-pcue", 20);
-Revolucion base3("lata-pinf", 20);
-Revolucion tapa3("lata-psup", 20);
+//Revolucion lata3("lata-pcue", 20);
+/*Revolucion base3("lata-pinf", 20);
+Revolucion tapa3("lata-psup", 20);*/
 
 void
 initModel ()
 {
   c1.activarTextura();
   lata1.activarTextura("cola.jpg");
-  lata2.activarTextura("amstel.jpg");
-  lata3.activarTextura("galaxia.jpg");
+  base1.activarTextura("tapas.jpg");
+  tapa1.activarTextura("tapas.jpg");
+  /*lata2.activarTextura("amstel.jpg");
+  lata3.activarTextura("galaxia.jpg");*/
 }
 
 
@@ -583,30 +596,52 @@ void Dibuja (void)
   glScaled(3,3,3);
   glTranslated(2,0,0);
   glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, c1.getId());
+  glBindTexture(GL_TEXTURE_2D, lata1.getId());
   lata1.draw4();
   glDisable(GL_TEXTURE_2D);
   glPopMatrix();
-  //Pintamos lata2
+
   glPushMatrix();
   glScaled(3,3,3);
+  glTranslated(2,0,0);
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, base1.getId());
+  base1.draw4();
+  glDisable(GL_TEXTURE_2D);
+  glPopMatrix();
+
+  glPushMatrix();
+  glScaled(3,3,3);
+  glTranslated(2,0,0);
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, tapa1.getId());
+  tapa1.draw4();
+  glDisable(GL_TEXTURE_2D);
+  glPopMatrix();
+
+/*
+  //Pintamos lata2
+  glPushMatrix();
+  //glScaled(3,3,3);
   glTranslated(-2,0,0);
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, c1.getId());
   lata2.draw4();
   glDisable(GL_TEXTURE_2D);
   glPopMatrix();
+
   //Pintamos lata3
   glPushMatrix();
-  glScaled(3,3,3);
+  //glScaled(3,3,3);
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, c1.getId());
   lata3.draw4();
   glDisable(GL_TEXTURE_2D);
   glPopMatrix();
   
-  /*
+  //dado
   glPushMatrix();
+  glTranslated(0,5,0);
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, c1.getId());
   c1.draw();
