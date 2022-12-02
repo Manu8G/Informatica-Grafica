@@ -429,20 +429,10 @@ class Revolucion:public Malla{
       distanciaTotal+=aux;
       distancias.push_back(distanciaTotal);
     }
+    cout<<"La distacia total es:"<<distanciaTotal;
   }
 
   //Generamos los vertices de la figura a partir de los iniciales
-  
-  
-  
-  
-  
-  //POR AQUI----Cambiar valores a la mitad dependiendo de la tapa o la base
-  
-  
-  
-  
-  
   void generar_vertices(vector<float> vertices){
     //Añadimos los vertices que obtenemos del archivo al vector de vertices
     int dmax=vertices[vertices.size()-2];
@@ -454,7 +444,13 @@ class Revolucion:public Malla{
       vertices_ply.push_back(v);
       //Generamos las componentes de la textura de los vertices iniciales
       pair<float, float> p;
-      p.first=0;
+      if(esTapa){
+        p.first=0;
+      }else if(esBase){
+        p.first=0.5;
+      }else{
+        p.first=0;
+      }
       p.second=distancias[i/3]/distanciaTotal;
       coordenadasTextura.push_back(p);
     }
@@ -470,7 +466,13 @@ class Revolucion:public Malla{
         vertices_ply.push_back(v);
         //Generamos las componentes de la textura de los vertices generados
         pair<float, float> p;
-        p.first=((radianes*180)/M_PI)/360;
+        if(esTapa){
+          p.first=(((radianes*180)/M_PI)/360)/2;
+        }else if(esBase){
+          p.first=((((radianes*180)/M_PI)/180)+180);
+        }else{
+          p.first=((radianes*180)/M_PI)/360;
+        }
         p.second=coordenadasTextura[j].second;
         coordenadasTextura.push_back(p);
       }  
