@@ -452,7 +452,6 @@ class Revolucion:public Malla{
       if(esTapa){
         p.first=((vertices[i]+radio)/(2*radio))/2;
         p.second=(vertices[i+2]+radio)/(2*radio);
-        cout<<"u->"<<p.first<<", v->"<<p.second<<endl;
       }else if(esBase){
         p.first=(((vertices[i]+radio)/(2*radio))/2)+0.5;
         p.second=(vertices[i+2]+radio)/(2*radio);
@@ -466,7 +465,6 @@ class Revolucion:public Malla{
     int tam=vertices_ply.size();
     for(int i=0; i<=instancias; i++){
       float radianes=((2*i*M_PI)/(instancias-1));
-      cout<<endl<<"OOOOOOOOOOOOOOOOOOOOOOOO"<<endl;
       for(int j=0; j<tam; j++){
         Vertice v;
         v.x=vertices_ply[j].x*cos(radianes);
@@ -478,7 +476,6 @@ class Revolucion:public Malla{
         if(esTapa){
           p.first=(((vertices_ply[j].x*cos(radianes))+radio)/(2*radio))/2;
           p.second=(((vertices_ply[j].x*sin(radianes)))+radio)/(2*radio);
-          cout<<"u->"<<p.first<<", v->"<<p.second<<endl;
         }else if(esBase){
           p.first=((((vertices_ply[j].x*cos(radianes))+radio)/(2*radio))/2)+0.5;
           p.second=(((vertices_ply[j].x*sin(radianes))+radio)/(2*radio));
@@ -716,3 +713,4 @@ void idle (int v)
   glutPostRedisplay ();		// Redibuja
   glutTimerFunc (30, idle, 0);	// Vuelve a activarse dentro de 30 ms
 }
+//un cambio tonto
