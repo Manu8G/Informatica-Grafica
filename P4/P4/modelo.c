@@ -429,13 +429,18 @@ class Revolucion:public Malla{
       distanciaTotal+=aux;
       distancias.push_back(distanciaTotal);
     }
-    cout<<"La distacia total es:"<<distanciaTotal;
   }
 
   //Generamos los vertices de la figura a partir de los iniciales
   void generar_vertices(vector<float> vertices){
     //Añadimos los vertices que obtenemos del archivo al vector de vertices
     int dmax=vertices[vertices.size()-2];
+    float radio=0;
+    for(int i=0; i<vertices.size(); i+=3){
+      if(radio<vertices[i]){
+        radio=vertices[i];
+      }
+    }
     for(int i=0; i<vertices.size(); i+=3){
       Vertice v;
       v.x=vertices[i];
@@ -445,19 +450,23 @@ class Revolucion:public Malla{
       //Generamos las componentes de la textura de los vertices iniciales
       pair<float, float> p;
       if(esTapa){
-        p.first=0;
+        p.first=((vertices[i]+radio)/(2*radio))/2;
+        p.second=(vertices[i+2]+radio)/(2*radio);
+        cout<<"u->"<<p.first<<", v->"<<p.second<<endl;
       }else if(esBase){
-        p.first=0.5;
+        p.first=(((vertices[i]+radio)/(2*radio))/2)+0.5;
+        p.second=(vertices[i+2]+radio)/(2*radio);
       }else{
         p.first=0;
+        p.second=distancias[i/3]/distanciaTotal;
       }
-      p.second=distancias[i/3]/distanciaTotal;
       coordenadasTextura.push_back(p);
     }
     //Generamos los nuevos vertices de la figura en funcion de los primeros
     int tam=vertices_ply.size();
     for(int i=0; i<=instancias; i++){
       float radianes=((2*i*M_PI)/(instancias-1));
+      cout<<endl<<"OOOOOOOOOOOOOOOOOOOOOOOO"<<endl;
       for(int j=0; j<tam; j++){
         Vertice v;
         v.x=vertices_ply[j].x*cos(radianes);
@@ -467,13 +476,16 @@ class Revolucion:public Malla{
         //Generamos las componentes de la textura de los vertices generados
         pair<float, float> p;
         if(esTapa){
-          p.first=(((radianes*180)/M_PI)/360)/2;
+          p.first=(((vertices_ply[j].x*cos(radianes))+radio)/(2*radio))/2;
+          p.second=(((vertices_ply[j].x*sin(radianes)))+radio)/(2*radio);
+          cout<<"u->"<<p.first<<", v->"<<p.second<<endl;
         }else if(esBase){
-          p.first=((((radianes*180)/M_PI)/180)+180);
+          p.first=((((vertices_ply[j].x*cos(radianes))+radio)/(2*radio))/2)+0.5;
+          p.second=(((vertices_ply[j].x*sin(radianes))+radio)/(2*radio));
         }else{
           p.first=((radianes*180)/M_PI)/360;
+          p.second=coordenadasTextura[j].second;
         }
-        p.second=coordenadasTextura[j].second;
         coordenadasTextura.push_back(p);
       }  
     }
@@ -547,8 +559,8 @@ void draw( )
 } ; 
 
 Ejes ejesCoordenadas;
-/*Malla m1("beethoven");  
-Malla m2("beethoven");*/
+Malla m1("beethoven");  
+Malla m2("beethoven");
 Revolucion lata1("lata-pcue", 20, false, false);
 Revolucion base1("lata-pinf", 20, false, true);
 Revolucion tapa1("lata-psup", 20, true, false);
@@ -591,8 +603,36 @@ void Dibuja (void)
 
   glLightfv (GL_LIGHT0, GL_POSITION, pos);	// Declaracion de luz. Colocada aqui esta fija en la escena
 
+  float color4[4] = { 1.0, 0.0, 0.0, 1 };
+  static GLfloat pos2[4] = { -10.0, -10.0, -10.0, 0.0 };	
+  glLightfv(GL_LIGHT1,GL_POSITION, pos2);
+  glLightfv(GL_LIGHT1, GL_AMBIENT, color4); 
+  glLightfv(GL_LIGHT1, GL_DIFFUSE, color4); 
+  glLightfv(GL_LIGHT1, GL_SPECULAR, color4); 
+
   ejesCoordenadas.draw();			// Dibuja los ejes
   
+  //Pintamos Beethoven especular
+  glPushMatrix();
+  glMaterialfv(GL_FRONT, GL_SPECULAR, m1.getEspecular());
+  glTranslatef(-15,0.0,0.0);
+  glShadeModel(GL_SMOOTH);
+  m1.draw3();
+  glPopMatrix();
+
+  //Pintamos Beethoven difuso
+  glPushMatrix();
+  glMaterialfv(GL_FRONT, GL_SPECULAR, m2.getDifusa());
+  glTranslatef(15,0.0,0.0);
+  glShadeModel(GL_SMOOTH);
+  m2.draw3();
+  glPopMatrix();
+  
+  
+  
+  
+
+
   //Pintamos lata1
   glPushMatrix();
   glScaled(3,3,3);
