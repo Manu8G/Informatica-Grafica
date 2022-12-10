@@ -34,6 +34,7 @@ modulo entradaTeclado.c
 #include "practicasIG.h"
 
 
+
 /** 
 
 Imprime en la consola las instrucciones del programa
@@ -97,6 +98,15 @@ void letra (unsigned char k, int x, int y)
       break;
     case '-':			// aleja la cámara
       dCamara += 5.0;
+      break;
+    case '1':	
+      cambiarLuz(1);
+      break;
+    case '2':
+      cambiarLuz(2);
+      break;
+    case '3':
+      cambiarLuz(3);
       break;
     case 27:			// Escape  Terminar
       exit (0);

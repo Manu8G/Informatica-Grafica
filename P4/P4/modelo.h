@@ -42,6 +42,7 @@ void idle (int v);
 **/
 void initModel ();
 
+void cambiarLuz(int num);
 
 
 class Objeto3D 

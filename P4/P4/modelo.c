@@ -63,7 +63,20 @@ Inicializa el modelo y de las variables globales
 **/
 using namespace std;
 
-class Cubo:Objeto3D{
+void cambiarLuz(int num){
+  if(num==1){
+    glEnable(GL_LIGHT2);
+    glDisable(GL_LIGHT1);
+  }else if(num==2){
+    glEnable(GL_LIGHT1);
+    glDisable(GL_LIGHT2); 
+  }else{
+    glDisable(GL_LIGHT1);
+    glDisable(GL_LIGHT2); 
+  }
+}
+
+class Cubo:public Objeto3D{
   public:
     float lado;
 
@@ -73,10 +86,10 @@ class Cubo:Objeto3D{
   } 
 
   void activarTextura(){
-    unsigned char *image = asignaTextura("cola.jpg");
+    unsigned char *image = asignaTextura("dado.jpg");
     
     glGenTextures(1 , &texId);
-    glBindTexture(GL_TEXTURE_2D, texId);//llamar
+    glBindTexture(GL_TEXTURE_2D, texId);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -156,39 +169,6 @@ class Cubo:Objeto3D{
 
       }
       glEnd ();
-  /*
-  glBegin (GL_QUAD_STRIP);
-  {				// Caras transversales 
-    glNormal3f (0.0, 0.0, 1.0);	//Vertical delantera 
-    glVertex3f (lado, lado, lado);
-    glVertex3f (0, lado, lado);
-    glVertex3f (lado, 0, lado);
-    glVertex3f (0, 0, lado);
-    glNormal3f (0.0, -1.0, 0.0);	//Inferior
-    glVertex3f (lado, 0, 0);
-    glVertex3f (0, 0, 0);
-    glNormal3f (0.0, 0.0, -1.0);	// Vertical hacia atras 
-    glVertex3f (lado, lado, 0);
-    glVertex3f (0, lado, 0);
-    glNormal3f (0.0, 1.0, 0.0);	// Superior, horizontal 
-    glVertex3f (lado, lado, lado);
-    glVertex3f (0, lado, lado);
-  }
-  glEnd ();
-  glBegin (GL_QUADS);
-  {				// Costados 
-    glNormal3f (1.0, 0.0, 0.0);
-    glVertex3f (lado, 0, 0);
-    glVertex3f (lado, lado, 0);
-    glVertex3f (lado, lado, lado);
-    glVertex3f (lado, 0, lado);
-    glNormal3f (-1.0, 0.0, 0.0);
-    glVertex3f (0, 0, 0);
-    glVertex3f (0, 0, lado);
-    glVertex3f (0, lado, lado);
-    glVertex3f (0, lado, 0);
-  }
-  glEnd ();*/
   }
 };
 
@@ -211,13 +191,13 @@ class Malla:public Objeto3D{
     float difusa[4]; 
     float especular[4];
     vector<pair<float,float>> coordenadasTextura;
-    int luz;
+    
   Malla(){}
   
   Malla(char nombre_archivo[30]){
     vector<float> vertices;
     vector<int> caras;
-    luz=1;
+    
     especular[0]=difusa[0]=1.0;
     especular[1]=difusa[1]=1.0; 
     especular[2]=difusa[2]=1.0;
@@ -238,14 +218,6 @@ class Malla:public Objeto3D{
     traduce_caras(caras);
     calcula_normal_cara();
     calcular_normal_vertice();
-  }
-
-  void cambiarLuz(){
-    if(luz==0){
-      luz=1;
-    }else{
-      luz=0;
-    }
   }
 
   void setDifusa(float * a){
@@ -558,6 +530,7 @@ void draw( )
 Ejes ejesCoordenadas;
 Malla m1("beethoven");  
 Malla m2("beethoven");
+Malla m3("beethoven");
 Revolucion lata1("lata-pcue", 20, false, false);
 Revolucion base1("lata-pinf", 20, false, true);
 Revolucion tapa1("lata-psup", 20, true, false);
@@ -577,18 +550,33 @@ initModel ()
   lata1.activarTextura("cola.jpg");
   base1.activarTextura("tapas.jpg");
   tapa1.activarTextura("tapas.jpg");
+  float a[3]={0.0,0.0,1.0};
+  m1.setDifusa(a);
+  m2.setEspecular(a);
   /*lata2.activarTextura("amstel.jpg");
   lata3.activarTextura("galaxia.jpg");*/
 }
 
-
 void Dibuja (void)
 {
-  static GLfloat  pos[4] = { 5.0, 5.0, 10.0, 0.0 };	// Posicion de la fuente de luz
 
-  float  color[4] = { 0.8, 0.0, 1, 1 };
-  float  color2[4] = { 0, 1, 0, 1 };
-  float  color3[4] = { 1, 0, 0, 1 };
+  static GLfloat  pos[4] = { 5.0, 5.0, 10.0, 0.0 };	// Posicion de la fuente de luz
+  float color4[4] = { 0.0, 1.0, 0.0, 1 };
+  //static GLfloat pos2[4] = { 10.0, -10.0, -10.0, 0.0 };
+  glLightfv(GL_LIGHT1,GL_POSITION, pos);
+  glLightfv(GL_LIGHT1, GL_AMBIENT, color4); 
+  //glLightfv(GL_LIGHT1, GL_DIFFUSE, color4); 
+  glLightfv(GL_LIGHT1, GL_SPECULAR, color4);
+
+  float color5[4] = { 1.0, 0.0, 0.0, 0 };
+  //static GLfloat pos2[4] = { -10.0, 10.0, -10.0, 0.0 };	
+  glLightfv(GL_LIGHT2,GL_POSITION, pos);
+  glLightfv(GL_LIGHT2, GL_AMBIENT, color5); 
+  glLightfv(GL_LIGHT2, GL_DIFFUSE, color5); 
+  //glLightfv(GL_LIGHT2, GL_SPECULAR, color5);
+
+  float  color[4] = { 0.8, 0.0, 0, 0 };
+  float  color2[4] = { 1, 1, 1, 1 };
   //glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
   glPushMatrix ();		// Apila la transformacion geometrica actual
 
@@ -600,40 +588,26 @@ void Dibuja (void)
 
   glLightfv (GL_LIGHT0, GL_POSITION, pos);	// Declaracion de luz. Colocada aqui esta fija en la escena
 
-  float color4[4] = { 1.0, 0.0, 0.0, 1 };
-  static GLfloat pos2[4] = { -10.0, -10.0, -10.0, 0.0 };	
-  glLightfv(GL_LIGHT1,GL_POSITION, pos2);
-  glLightfv(GL_LIGHT1, GL_AMBIENT, color4); 
-  glLightfv(GL_LIGHT1, GL_DIFFUSE, color4); 
-  glLightfv(GL_LIGHT1, GL_SPECULAR, color4); 
 
   ejesCoordenadas.draw();			// Dibuja los ejes
   
-  //Pintamos Beethoven especular
+  //dado
   glPushMatrix();
-  glMaterialfv(GL_FRONT, GL_SPECULAR, m1.getEspecular());
-  glTranslatef(-15,0.0,0.0);
-  glShadeModel(GL_SMOOTH);
-  m1.draw3();
+  glTranslated(-15,15,0);
+  glMaterialfv (GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color2);
+  glMaterialfv (GL_FRONT, GL_SPECULAR, color2);
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, c1.getId());
+  c1.draw();
+  glDisable(GL_TEXTURE_2D);
   glPopMatrix();
-
-  //Pintamos Beethoven difuso
-  glPushMatrix();
-  glMaterialfv(GL_FRONT, GL_SPECULAR, m2.getDifusa());
-  glTranslatef(15,0.0,0.0);
-  glShadeModel(GL_SMOOTH);
-  m2.draw3();
-  glPopMatrix();
-  
-  
-  
-  
-
 
   //Pintamos lata1
   glPushMatrix();
   glScaled(3,3,3);
-  glTranslated(2,0,0);
+  glTranslated(2,5,0);
+  glMaterialfv (GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color2);
+  glMaterialfv (GL_FRONT, GL_SPECULAR, color2);
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, lata1.getId());
   lata1.draw4();
@@ -642,7 +616,9 @@ void Dibuja (void)
 
   glPushMatrix();
   glScaled(3,3,3);
-  glTranslated(2,0,0);
+  glTranslated(2,5,0);
+  glMaterialfv (GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color2);
+  glMaterialfv (GL_FRONT, GL_SPECULAR, color2);
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, base1.getId());
   base1.draw4();
@@ -651,13 +627,41 @@ void Dibuja (void)
 
   glPushMatrix();
   glScaled(3,3,3);
-  glTranslated(2,0,0);
+  glTranslated(2,5,0);
+  glMaterialfv (GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color2);
+  glMaterialfv (GL_FRONT, GL_SPECULAR, color2);
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, tapa1.getId());
   tapa1.draw4();
   glDisable(GL_TEXTURE_2D);
   glPopMatrix();
 
+  //Pintamos Beethoven especular
+  glPushMatrix();
+  glMaterialfv(GL_FRONT, GL_SPECULAR, color);//m1.getEspecular());
+  glTranslatef(0,0.0,0.0);
+  //glShadeModel(GL_SMOOTH);
+  m1.draw3();
+  glPopMatrix();
+
+  //Pintamos Beethoven difuso
+  glPushMatrix();
+  glMaterialfv(GL_FRONT, GL_DIFFUSE,  color);//m2.getDifusa());
+  glTranslatef(15,0.0,0.0);
+  //glShadeModel(GL_SMOOTH);
+  m2.draw3();
+  glPopMatrix();
+
+  //Pintamos Beethoven ambiental
+  glPushMatrix();
+  glMaterialfv(GL_FRONT, GL_AMBIENT,  color);//m2.getDifusa());
+  glTranslatef(-15,0.0,0.0);
+  //glShadeModel(GL_SMOOTH);
+  m3.draw3();
+  glPopMatrix();
+
+  
+  
 /*
   //Pintamos lata2
   glPushMatrix();
@@ -677,25 +681,9 @@ void Dibuja (void)
   lata3.draw4();
   glDisable(GL_TEXTURE_2D);
   glPopMatrix();
+  */
   
-  //dado
-  glPushMatrix();
-  glTranslated(0,5,0);
-  glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, c1.getId());
-  c1.draw();
-  glDisable(GL_TEXTURE_2D);
-  glPopMatrix();
-  */
-
-  /*
-  if(luz==0){
-        glMaterialfv(GL_FRONT, GL_SPECULAR, especular);
-      }else{
-        glMaterialfv(GL_FRONT, GL_SPECULAR, difusa);
-      }
-  */
-
+  
   glPopMatrix ();		// Desapila la transformacion geometrica
 
   glutSwapBuffers ();		// Intercambia el buffer de dibujo y visualizacion
