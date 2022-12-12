@@ -63,6 +63,40 @@ Inicializa el modelo y de las variables globales
 **/
 using namespace std;
 
+/*
+Se incluirá en la escena un mecanismo para cambiar la proyección ofreciendo las vistas
+clásicas de frente, alzado y perfil de la escena. Al menos una de ellas deberá tener proyec-
+ción ortogonal y al menos otra proyección en perspectiva. Se activarán con las teclas F1, F2
+y F3.
+
+    Para la proyección ortogonal        ->   glOrtho( GLdouble l, GLdouble r, GLdouble b, GLdouble t, GLdouble n, GLdouble f ) ;
+    Para la proyección en perspectiva   ->   gluPerspective( GLdouble α, GLdouble a, GLdouble n, GLdouble f ) ;
+
+
+Con las teclas A,S,D y W se moverá la cámara activa por la escena, conservando la dirección 
+en la que se está mirando.
+
+Para ello será necesario modificar únicamente el punto VRP o eye (esto equivale a modificar la traslación al sistema
+de coordenadas de la cámara). Para realizar este desplazamiento es necesario calcular la dirección en la que está mirando la cámara.
+
+Por otro lado, girar la cámara a derecha o izquierda, arriba o abajo se realizará siguiendo
+los movimientos del ratón con el botón central pulsado. 
+
+Esto implica modificar el VPN o el lookAt o el giro de la transformación de visualización.
+Para controlar la cámara con el ratón es necesario hacer que los cambios de posición del
+ratón afecten a la posición de la cámara, y en glut eso se hace indicando las funciones que
+queremos que procesen los eventos de ratón. En el programa principal del código de partida
+aparece:
+
+
+
+*/
+
+
+
+
+
+
 void cambiarLuz(int num){
   if(num==1){
     glEnable(GL_LIGHT2);
@@ -561,23 +595,14 @@ void Dibuja (void)
 {
 
   static GLfloat  pos[4] = { 5.0, 5.0, 10.0, 0.0 };	// Posicion de la fuente de luz
-  float color4[4] = { 0.0, 1.0, 0.0, 1 };
-  //static GLfloat pos2[4] = { 10.0, -10.0, -10.0, 0.0 };
-  glLightfv(GL_LIGHT1,GL_POSITION, pos);
-  glLightfv(GL_LIGHT1, GL_AMBIENT, color4); 
-  //glLightfv(GL_LIGHT1, GL_DIFFUSE, color4); 
-  glLightfv(GL_LIGHT1, GL_SPECULAR, color4);
-
-  float color5[4] = { 1.0, 0.0, 0.0, 0 };
-  //static GLfloat pos2[4] = { -10.0, 10.0, -10.0, 0.0 };	
-  glLightfv(GL_LIGHT2,GL_POSITION, pos);
-  glLightfv(GL_LIGHT2, GL_AMBIENT, color5); 
-  glLightfv(GL_LIGHT2, GL_DIFFUSE, color5); 
-  //glLightfv(GL_LIGHT2, GL_SPECULAR, color5);
+ 
 
   float  color[4] = { 0.8, 0.0, 0, 0 };
   float  color2[4] = { 1, 1, 1, 1 };
-  //glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+
+  float  color3[4] = { 0.8, 0.0, 1, 1 };
+  float  color4[4] = { 0, 1, 0, 1 };
+  float  color5[4] = { 1, 0, 0, 1 };
   glPushMatrix ();		// Apila la transformacion geometrica actual
 
   glClearColor (0.0, 0.0, 0.0, 1.0);	// Fija el color de fondo a negro
@@ -636,52 +661,28 @@ void Dibuja (void)
   glDisable(GL_TEXTURE_2D);
   glPopMatrix();
 
-  //Pintamos Beethoven especular
+  //Pintamos Beethoven1
   glPushMatrix();
-  glMaterialfv(GL_FRONT, GL_SPECULAR, color);//m1.getEspecular());
+  glMaterialfv (GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color3);
   glTranslatef(0,0.0,0.0);
-  //glShadeModel(GL_SMOOTH);
+  glShadeModel(GL_SMOOTH);
   m1.draw3();
   glPopMatrix();
 
-  //Pintamos Beethoven difuso
+  //Pintamos Beethoven2
   glPushMatrix();
-  glMaterialfv(GL_FRONT, GL_DIFFUSE,  color);//m2.getDifusa());
+  glMaterialfv (GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color4);
   glTranslatef(15,0.0,0.0);
-  //glShadeModel(GL_SMOOTH);
+  glShadeModel(GL_SMOOTH);
   m2.draw3();
   glPopMatrix();
 
-  //Pintamos Beethoven ambiental
+  //Pintamos Beethoven3
   glPushMatrix();
-  glMaterialfv(GL_FRONT, GL_AMBIENT,  color);//m2.getDifusa());
+  glMaterialfv (GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color5);
   glTranslatef(-15,0.0,0.0);
-  //glShadeModel(GL_SMOOTH);
   m3.draw3();
   glPopMatrix();
-
-  
-  
-/*
-  //Pintamos lata2
-  glPushMatrix();
-  //glScaled(3,3,3);
-  glTranslated(-2,0,0);
-  glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, c1.getId());
-  lata2.draw4();
-  glDisable(GL_TEXTURE_2D);
-  glPopMatrix();
-
-  //Pintamos lata3
-  glPushMatrix();
-  //glScaled(3,3,3);
-  glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, c1.getId());
-  lata3.draw4();
-  glDisable(GL_TEXTURE_2D);
-  glPopMatrix();
-  */
   
   
   glPopMatrix ();		// Desapila la transformacion geometrica
