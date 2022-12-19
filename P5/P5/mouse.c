@@ -49,10 +49,12 @@ x,y: Posicion, en coordenadas de pantalla, en que se encuantra el cursor.
 using namespace std;
 
 bool MOVIENDO_CAMARA=false;
-float xant=0;
-float yant=0;
+float xant=0, yant=0;
+float iniX=0, iniY=0;
+float priX=0, priY=0;
+float postX=0, postY=0;
 bool reset=true;
-float iniX=0, iniY=0; 
+ 
 
 void clickRaton (int boton, int estado, int x, int y){
 	if(boton == GLUT_MIDDLE_BUTTON){
@@ -79,12 +81,13 @@ x,y: Posicion, en coordenadas de pantalla, en que se encuantra el cursor.
 void RatonMovido (int x, int y){
 	if(MOVIENDO_CAMARA){
 		//Girar la camara usando segun el vector(x−xant, y−yant);
-		xant=x;
-		yant=y;
 		if(reset==true){
-
+			priX=x;
+			priY=y;
+			reset=false;
 		}
-		reset=false;
+		xant=iniX+(postX-priX);
+		yant=iniY+(postY-priY);
 		ajustarV(xant, yant);
 		setPosCamara(xant, yant);
 	}
