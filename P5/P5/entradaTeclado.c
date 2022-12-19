@@ -32,6 +32,7 @@ modulo entradaTeclado.c
 #include <math.h>
 #include <GL/glut.h>		// Libreria de utilidades de OpenGL
 #include "practicasIG.h"
+#include "visual.h"
 
 
 
@@ -80,9 +81,11 @@ y:
 
 **/
 
-float rotxCamara = 0, rotyCamara = 0;
-float dCamara = 23;
-
+float rotxCamara = 0, rotyCamara = 0, rotzCamara = 0;
+float CX = 0;
+float CY = 0;
+float CZ = 25;
+bool orto=false;
 
 void letra (unsigned char k, int x, int y)
 {
@@ -94,26 +97,42 @@ void letra (unsigned char k, int x, int y)
       printHelp ();		// H y h imprimen ayuda
       break;
     case '+':			// acerca la cámara
-      dCamara -= 5.0;
+      CZ -= 5.0;
       break;
     case '-':			// aleja la cámara
-      dCamara += 5.0;
+      CZ += 5.0;
       break;
-    case '1':	
+    case '1':	          //Activamos la luz 2 y desactviamos la 1
       cambiarLuz(1);
       break;
-    case '2':
+    case '2':           //Activamos la luz 1 y desactivamos la 2 
       cambiarLuz(2);
       break;
     case '3':
-      cambiarLuz(3);
+      cambiarLuz(3);    //Desactivamos la luz 1 y la 2
+      break;
+    case 'a':	          //Desplazamos la camara a la izquierda
+    case 'A':
+      CX += 5.0;
+      break;
+    case 'd':	          //Desplazamos la camara a la derecha
+    case 'D':
+      CX -= 5.0;
+      break;
+    case 'w':	          //Desplazamos la camara a la hacia delante
+    case 'W':
+      CZ -= 5.0;
+      break;
+    case 's':	          //Desplazamos la camara a la atras
+    case 'S':
+      CZ += 5.0;
       break;
     case 27:			// Escape  Terminar
       exit (0);
     default:
       return;
     }
-  setCamara (rotxCamara, rotyCamara, dCamara);
+  setCamara (rotxCamara, rotyCamara, CX, CZ, orto);
   glutPostRedisplay ();		// Algunas de las opciones cambian paramentros
 }				// de la camara. Es necesario actualziar la imagen
 
@@ -138,7 +157,7 @@ void especial (int k, int x, int y)
     case GLUT_KEY_UP:
       rotxCamara += 5.0;	// Cursor arriba + rotacion x
       if (rotxCamara > 360)
-	rotxCamara -= 360;
+	      rotxCamara -= 360;
       break;
     case GLUT_KEY_DOWN:
       rotxCamara -= 5.0;
@@ -156,14 +175,26 @@ void especial (int k, int x, int y)
 	rotyCamara += 360;
       break;
     case GLUT_KEY_PAGE_DOWN:	// acerca la cámara
-      dCamara -= 5.0;
+      CZ -= 5.0;
       break;
     case GLUT_KEY_PAGE_UP:	// aleja la cámara
-      dCamara += 5.0;
+      CZ += 5.0;
+      break;
+    case GLUT_KEY_F1:	//Vista planta
+      rotxCamara = 90, rotyCamara = 0, rotzCamara = 0;
+      orto=false;
+      break;
+    case GLUT_KEY_F2:	//Vista alzado
+      rotxCamara = 0, rotyCamara = -90, rotzCamara = 0;
+      orto=false;
+      break;
+    case GLUT_KEY_F3:	//Vista perfil
+      rotxCamara = 0, rotyCamara = 0, rotzCamara = 90;
+      orto=true;
       break;
     default:
       return;
     }
-  setCamara (rotxCamara, rotyCamara, dCamara);
+  setCamara (rotxCamara, rotyCamara, CX, CZ, orto);
   glutPostRedisplay ();		// Actualiza la imagen (ver proc. letra)
 }

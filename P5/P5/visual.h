@@ -37,8 +37,7 @@
 Cambia los parámetros de la cámara en el modulo visual
 
 **/
-void setCamara (float ax, float ay, float d);
-
+void setCamara (float ax, float ay, float x, float z, bool orto);
 
 
 /** 	void transformacionVisualizacion()

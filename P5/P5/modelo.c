@@ -30,16 +30,6 @@ modulo modelo.c
 
 */
 
-/*
-DUDAS
-  -Tengo variables necesarias para los calculos en la clase de revolucion, por lo cual he tenido que poner un nuevo metodo
-   de dibujo en la clase de revolucion por lo que esto estaria bien o tengo que usar un metodo de dibujo de la clase malla
-   porque si modifico los de malla a la hora de dibujar un beethoven me va a dar fallo porque no tiene textura
-  -
-*/
-
-
-
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <iostream>
@@ -62,38 +52,17 @@ Inicializa el modelo y de las variables globales
 
 **/
 using namespace std;
-
 /*
-Se incluirá en la escena un mecanismo para cambiar la proyección ofreciendo las vistas
-clásicas de frente, alzado y perfil de la escena. Al menos una de ellas deberá tener proyec-
-ción ortogonal y al menos otra proyección en perspectiva. Se activarán con las teclas F1, F2
-y F3.
-
-    Para la proyección ortogonal        ->   glOrtho( GLdouble l, GLdouble r, GLdouble b, GLdouble t, GLdouble n, GLdouble f ) ;
-    Para la proyección en perspectiva   ->   gluPerspective( GLdouble α, GLdouble a, GLdouble n, GLdouble f ) ;
+DUDAS:
+  -El boton "+" no haria lo mismo que el "w", y el - que el s??
 
 
-Con las teclas A,S,D y W se moverá la cámara activa por la escena, conservando la dirección 
-en la que se está mirando.
-
-Para ello será necesario modificar únicamente el punto VRP o eye (esto equivale a modificar la traslación al sistema
-de coordenadas de la cámara). Para realizar este desplazamiento es necesario calcular la dirección en la que está mirando la cámara.
-
-Por otro lado, girar la cámara a derecha o izquierda, arriba o abajo se realizará siguiendo
-los movimientos del ratón con el botón central pulsado. 
-
-Esto implica modificar el VPN o el lookAt o el giro de la transformación de visualización.
-Para controlar la cámara con el ratón es necesario hacer que los cambios de posición del
-ratón afecten a la posición de la cámara, y en glut eso se hace indicando las funciones que
-queremos que procesen los eventos de ratón. En el programa principal del código de partida
-aparece:
-
-
-
-*/
-
-
-
+RESUELTAS:
+  Apartado1: 
+    Al cambiar a alguno X se debe de aplicar automaticamente la vision ortogonal, en las demas estara la por defecto. La 
+    ortogonal es mas grande en tamaño que la por defecto esto implica q sus 4 primeros valores sean mayores
+    
+ */
 
 
 

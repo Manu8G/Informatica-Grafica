@@ -36,7 +36,7 @@ modulo visual.c
 #include <GL/glut.h>		// Libreria de utilidades de OpenGL
 #include "practicasIG.h"
 
-
+using namespace std;
 
 
 //================================================ VARIABLES  
@@ -47,8 +47,8 @@ Angulos de rotacion de la camara.
 
 **/
 
-float view_rotx = 0, view_roty = 0;
-
+float view_rotx = 0, view_roty = 0, view_rotz=0;
+bool ortogonal=false;
 
 /**
 
@@ -56,8 +56,9 @@ Distancia de la cámara
 
 **/
 
-float D = 23;
-
+float X = 0;
+float Y = 0;
+float Z = 25;
 
 /**
 
@@ -76,13 +77,38 @@ float anchoVentana, altoVentana;
 Cambia los parámetros de la cámara en el modulo visual
 
 **/
-void setCamara (float ax, float ay, float d)
+void setCamara (float ax, float ay, float x, float z, bool orto)
 {
   view_rotx = ax;
   view_roty = ay;
-
-  D = d;
+  X = x;
+  Z = z;
+  ortogonal=orto;
 }
+
+
+void clickRaton(int boton, int estado, int x, int y){
+  if(boton == GLUT_MIDDLE_BUTTON){
+    if(estado == GLUT_DOWN){
+      //Se entra en el estado "moviendo camara"
+    }
+    else{
+    // Se sale del estado "moviendo camara"
+    }
+  }
+}
+
+void ratonMovido(int x, int y){
+
+}
+......
+if(MOVIENDO_CAMARA){
+  //Girar la camara usando segun el vector(x−xant, y−yant);
+  xant=x;
+  yant=y;
+}
+...
+glutPostRedisplay ( ) ;
 
 
 /** 	void transformacionVisualizacion()
@@ -96,11 +122,11 @@ view_roty;
 **/
 void transformacionVisualizacion ()
 {
-  glTranslatef (0, 0, -D);
+  glTranslatef (X, Y, -Z);
 
   glRotatef (view_rotx, 1.0, 0.0, 0.0);
   glRotatef (view_roty, 0.0, 1.0, 0.0);
-
+  glRotatef (view_rotz, 0.0, 0.0, 1.0);
   // glTranslatef(-x_camara,-y_camara,-z_camara);
 }
 
@@ -109,8 +135,7 @@ void transformacionVisualizacion ()
 Fija la transformacion de proyeccion en funcion del tamaño de la ventana y del tipo de proyeccion
 
 **/
-void fijaProyeccion ()
-{
+void fijaProyeccion (){
   float calto;			// altura de la ventana corregida
 
   if (anchoVentana > 0)
@@ -118,7 +143,12 @@ void fijaProyeccion ()
   else
     calto = 1;
 
-  glFrustum (-1, 1, -calto, calto, 1.5, 1500);
+  if(ortogonal==true){
+    glOrtho( -1.2, 1.2, -(calto+0.2), calto+0.2, 1.5, 1500);
+  }else{
+    glFrustum (-1, 1, -calto, calto, 1.5, 1500);
+  }
+  
 
   glMatrixMode (GL_MODELVIEW);
 // A partir de este momento las transformaciones son de modelado.       
