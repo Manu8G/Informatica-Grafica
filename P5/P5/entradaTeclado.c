@@ -81,11 +81,19 @@ y:
 
 **/
 
-float rotxCamara = 0, rotyCamara = 0, rotzCamara = 0;
+float rotxCamara = 0, rotyCamara = 0;
 float CX = 0;
 float CY = 0;
 float CZ = 25;
 bool orto=false;
+
+
+void setPosCamara(float rx, float ry){
+  rotxCamara = rx;
+  rotyCamara = ry;
+}
+
+
 
 void letra (unsigned char k, int x, int y)
 {
@@ -181,15 +189,15 @@ void especial (int k, int x, int y)
       CZ += 5.0;
       break;
     case GLUT_KEY_F1:	//Vista planta
-      rotxCamara = 90, rotyCamara = 0, rotzCamara = 0;
+      rotxCamara = 90, rotyCamara = 0;
       orto=false;
       break;
     case GLUT_KEY_F2:	//Vista alzado
-      rotxCamara = 0, rotyCamara = -90, rotzCamara = 0;
+      rotxCamara = 0, rotyCamara = -90;
       orto=false;
       break;
     case GLUT_KEY_F3:	//Vista perfil
-      rotxCamara = 0, rotyCamara = 0, rotzCamara = 90;
+      rotxCamara = 0, rotyCamara = 0;
       orto=true;
       break;
     default:

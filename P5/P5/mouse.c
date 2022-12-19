@@ -46,10 +46,23 @@ estado: Estado en el que esta el boton que se ha pulsado.
 x,y: Posicion, en coordenadas de pantalla, en que se encuantra el cursor.
 
 **/
+using namespace std;
 
-void clickRaton (int boton, int estado, int x, int y)
-{
+bool MOVIENDO_CAMARA=false;
+float xant=0;
+float yant=0;
+bool reset=true;
+float iniX=0, iniY=0; 
 
+void clickRaton (int boton, int estado, int x, int y){
+	if(boton == GLUT_MIDDLE_BUTTON){
+		if(estado == GLUT_DOWN){
+			MOVIENDO_CAMARA=true;
+		}else{
+			MOVIENDO_CAMARA=false;
+			reset=true;
+		}
+	}
 }
 
 
@@ -63,7 +76,24 @@ x,y: Posicion, en coordenadas de pantalla, en que se encuantra el cursor.
 
 **/
 
-void RatonMovido (int x, int y)
-{
+void RatonMovido (int x, int y){
+	if(MOVIENDO_CAMARA){
+		//Girar la camara usando segun el vector(x−xant, y−yant);
+		xant=x;
+		yant=y;
+		if(reset==true){
 
+		}
+		reset=false;
+		ajustarV(xant, yant);
+		setPosCamara(xant, yant);
+	}
+	
+	glutPostRedisplay ( ) ;
+}
+
+void ajustarM(float x, float y){
+	cout<<"Ajustar mouse antes x:"<<xant<<", y: "<<yant<<", ahora x:"<<x<<", y: "<<y<<endl;
+	xant=x;
+	yant=y;
 }

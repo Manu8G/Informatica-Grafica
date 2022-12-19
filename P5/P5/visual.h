@@ -63,3 +63,5 @@ Inicializa el viewport para que ocupe toda la ventana X, y llama a fijaProyeccio
 **/
 
 void inicializaVentana (GLsizei ancho, GLsizei alto);
+
+void ajustarV(float x, float y);

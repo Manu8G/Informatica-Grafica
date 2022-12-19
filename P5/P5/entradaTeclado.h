@@ -27,7 +27,7 @@
 	entradaTeclado.h
 */
 
-
+void setPosCamara(float rx, float ry);
 /**	
 	Funcion de captura de eventos pulsacion de tecla correspondiente a caracter alfanumerico
 	K: codigo ascii del caracter

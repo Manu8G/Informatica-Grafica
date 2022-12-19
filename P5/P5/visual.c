@@ -47,9 +47,8 @@ Angulos de rotacion de la camara.
 
 **/
 
-float view_rotx = 0, view_roty = 0, view_rotz=0;
+float view_rotx = 0, view_roty = 0;
 bool ortogonal=false;
-
 /**
 
 Distancia de la cámara
@@ -77,6 +76,13 @@ float anchoVentana, altoVentana;
 Cambia los parámetros de la cámara en el modulo visual
 
 **/
+
+void ajustarV(float x, float y){
+  cout<<"Ajustar visual antes x:"<<view_rotx<<", y: "<<view_roty<<", ahora x:"<<x<<", y: "<<y<<endl;
+  view_rotx=x;
+  view_roty=y;
+}
+
 void setCamara (float ax, float ay, float x, float z, bool orto)
 {
   view_rotx = ax;
@@ -84,31 +90,10 @@ void setCamara (float ax, float ay, float x, float z, bool orto)
   X = x;
   Z = z;
   ortogonal=orto;
+  ajustarM(view_rotx, view_roty);
 }
 
 
-void clickRaton(int boton, int estado, int x, int y){
-  if(boton == GLUT_MIDDLE_BUTTON){
-    if(estado == GLUT_DOWN){
-      //Se entra en el estado "moviendo camara"
-    }
-    else{
-    // Se sale del estado "moviendo camara"
-    }
-  }
-}
-
-void ratonMovido(int x, int y){
-
-}
-......
-if(MOVIENDO_CAMARA){
-  //Girar la camara usando segun el vector(x−xant, y−yant);
-  xant=x;
-  yant=y;
-}
-...
-glutPostRedisplay ( ) ;
 
 
 /** 	void transformacionVisualizacion()
@@ -126,8 +111,7 @@ void transformacionVisualizacion ()
 
   glRotatef (view_rotx, 1.0, 0.0, 0.0);
   glRotatef (view_roty, 0.0, 1.0, 0.0);
-  glRotatef (view_rotz, 0.0, 0.0, 1.0);
-  // glTranslatef(-x_camara,-y_camara,-z_camara);
+  
 }
 
 /**	void fijaProyeccion()
