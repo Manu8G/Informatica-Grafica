@@ -78,7 +78,6 @@ Cambia los parámetros de la cámara en el modulo visual
 **/
 
 void ajustarV(float x, float y){
-  cout<<"Ajustar visual antes x:"<<view_rotx<<", y: "<<view_roty<<", ahora x:"<<x<<", y: "<<y<<endl;
   view_rotx=x;
   view_roty=y;
 }

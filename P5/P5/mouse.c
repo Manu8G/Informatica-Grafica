@@ -82,21 +82,25 @@ void RatonMovido (int x, int y){
 	if(MOVIENDO_CAMARA){
 		//Girar la camara usando segun el vector(x−xant, y−yant);
 		if(reset==true){
-			priX=x;
-			priY=y;
+			priX=y;
+			priY=x;
+			postX=y;
+			postY=x;
 			reset=false;
 		}
+		postX=y;
+		postY=x;
 		xant=iniX+(postX-priX);
 		yant=iniY+(postY-priY);
 		ajustarV(xant, yant);
 		setPosCamara(xant, yant);
 	}
-	
-	glutPostRedisplay ( ) ;
+	glutPostRedisplay();
 }
 
 void ajustarM(float x, float y){
-	cout<<"Ajustar mouse antes x:"<<xant<<", y: "<<yant<<", ahora x:"<<x<<", y: "<<y<<endl;
 	xant=x;
 	yant=y;
+	iniX=x;
+	iniY=y;
 }

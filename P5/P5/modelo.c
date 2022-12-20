@@ -546,9 +546,7 @@ Revolucion tapa2("lata-psup", 20);*/
 /*Revolucion base3("lata-pinf", 20);
 Revolucion tapa3("lata-psup", 20);*/
 
-void
-initModel ()
-{
+void initModel (){
   c1.activarTextura();
   lata1.activarTextura("cola.jpg");
   base1.activarTextura("tapas.jpg");
@@ -560,8 +558,11 @@ initModel ()
   lata3.activarTextura("galaxia.jpg");*/
 }
 
-void Dibuja (void)
-{
+
+void dibujaEscena()
+
+
+void Dibuja (void){
 
   static GLfloat  pos[4] = { 5.0, 5.0, 10.0, 0.0 };	// Posicion de la fuente de luz
  
