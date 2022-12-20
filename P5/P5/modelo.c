@@ -559,12 +559,8 @@ void initModel (){
 }
 
 
-void dibujaEscena()
-
-
-void Dibuja (void){
-
-  static GLfloat  pos[4] = { 5.0, 5.0, 10.0, 0.0 };	// Posicion de la fuente de luz
+void dibujaEscena(){
+static GLfloat  pos[4] = { 5.0, 5.0, 10.0, 0.0 };	// Posicion de la fuente de luz
  
 
   float  color[4] = { 0.8, 0.0, 0, 0 };
@@ -585,51 +581,6 @@ void Dibuja (void){
 
 
   ejesCoordenadas.draw();			// Dibuja los ejes
-  
-  //dado
-  glPushMatrix();
-  glTranslated(-15,15,0);
-  glMaterialfv (GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color2);
-  glMaterialfv (GL_FRONT, GL_SPECULAR, color2);
-  glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, c1.getId());
-  c1.draw();
-  glDisable(GL_TEXTURE_2D);
-  glPopMatrix();
-
-  //Pintamos lata1
-  glPushMatrix();
-  glScaled(3,3,3);
-  glTranslated(2,5,0);
-  glMaterialfv (GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color2);
-  glMaterialfv (GL_FRONT, GL_SPECULAR, color2);
-  glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, lata1.getId());
-  lata1.draw4();
-  glDisable(GL_TEXTURE_2D);
-  glPopMatrix();
-
-  glPushMatrix();
-  glScaled(3,3,3);
-  glTranslated(2,5,0);
-  glMaterialfv (GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color2);
-  glMaterialfv (GL_FRONT, GL_SPECULAR, color2);
-  glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, base1.getId());
-  base1.draw4();
-  glDisable(GL_TEXTURE_2D);
-  glPopMatrix();
-
-  glPushMatrix();
-  glScaled(3,3,3);
-  glTranslated(2,5,0);
-  glMaterialfv (GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color2);
-  glMaterialfv (GL_FRONT, GL_SPECULAR, color2);
-  glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, tapa1.getId());
-  tapa1.draw4();
-  glDisable(GL_TEXTURE_2D);
-  glPopMatrix();
 
   //Pintamos Beethoven1
   glPushMatrix();
@@ -657,6 +608,11 @@ void Dibuja (void){
   
   glPopMatrix ();		// Desapila la transformacion geometrica
 
+}
+
+
+void Dibuja (void){
+  dibujaEscena();  
   glutSwapBuffers ();		// Intercambia el buffer de dibujo y visualizacion
 }
 
