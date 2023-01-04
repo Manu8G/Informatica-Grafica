@@ -118,7 +118,7 @@ void transformacionVisualizacion ()
 Fija la transformacion de proyeccion en funcion del tamaño de la ventana y del tipo de proyeccion
 
 **/
-void fijaProyeccion (){
+void fijaProyeccion(){
   float calto;			// altura de la ventana corregida
 
   if (anchoVentana > 0)
@@ -127,9 +127,11 @@ void fijaProyeccion (){
     calto = 1;
 
   if(ortogonal==true){
-    glOrtho( -1.2, 1.2, -(calto+0.2), calto+0.2, 1.5, 1500);
+    glOrtho( -1.2, 1.2, -calto*1.2, calto*1.2, 1.5, 1500);
+    cout<<"ahora orto"<<endl;
   }else{
     glFrustum (-1, 1, -calto, calto, 1.5, 1500);
+    cout<<"ahora frustum"<<endl;
   }
   
 

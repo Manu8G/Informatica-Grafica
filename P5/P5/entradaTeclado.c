@@ -86,7 +86,7 @@ float CX = 0;
 float CY = 0;
 float CZ = 25;
 bool orto=false;
-
+bool cambio1=false;
 
 void setPosCamara(float rx, float ry){
   rotxCamara = rx;
@@ -189,20 +189,33 @@ void especial (int k, int x, int y)
       CZ += 5.0;
       break;
     case GLUT_KEY_F1:	//Vista planta
-      rotxCamara = 90, rotyCamara = 0;
+      rotxCamara = 90, rotyCamara = 0; //CX=0; CZ=25;
+      if(orto==true){
+        cambio1=true;
+      }
       orto=false;
       break;
     case GLUT_KEY_F2:	//Vista alzado
-      rotxCamara = 0, rotyCamara = -90;
+      rotxCamara = 0, rotyCamara = -90; //CX=0; CZ=25;
+      if(orto==true){
+        cambio1=true;
+      }
       orto=false;
       break;
     case GLUT_KEY_F3:	//Vista perfil
-      rotxCamara = 0, rotyCamara = 0;
+      rotxCamara = 0, rotyCamara = 0; //CX=0; CZ=25;
+      if(orto==false){
+        cambio1=true;
+      }
       orto=true;
       break;
     default:
       return;
     }
   setCamara (rotxCamara, rotyCamara, CX, CZ, orto);
+  if(cambio1){
+    cambio1=false;
+    setCambio();
+  }
   glutPostRedisplay ();		// Actualiza la imagen (ver proc. letra)
 }

@@ -54,8 +54,6 @@ Inicializa el modelo y de las variables globales
 using namespace std;
 /*
 DUDAS:
-  -El boton "+" no haria lo mismo que el "w", y el - que el s??
-
 
 RESUELTAS:
   Apartado1: 
@@ -64,7 +62,19 @@ RESUELTAS:
     
  */
 
+int numID=0;
+void asignarID(int & id){
+  id=numID;
+  if(numID<255){
+    numID++;
+  }
+}
 
+bool cambio=false;
+
+void setCambio(){
+  cambio=true;
+}
 
 void cambiarLuz(int num){
   if(num==1){
@@ -194,13 +204,17 @@ class Malla:public Objeto3D{
     float difusa[4]; 
     float especular[4];
     vector<pair<float,float>> coordenadasTextura;
-    
-  Malla(){}
+    int id;
+
+  Malla(){
+    asignarID(id);
+  }
   
   Malla(char nombre_archivo[30]){
     vector<float> vertices;
     vector<int> caras;
     
+    asignarID(id);
     especular[0]=difusa[0]=1.0;
     especular[1]=difusa[1]=1.0; 
     especular[2]=difusa[2]=1.0;
@@ -524,9 +538,8 @@ void draw( )
     glVertex3f (0, 0, 0);
     glVertex3f (0, 0, longitud);
   }
-  glEnd ();
+  glEnd ();  
   glEnable (GL_LIGHTING);
-
 }
 } ; 
 
@@ -559,33 +572,33 @@ void initModel (){
 }
 
 
-void dibujaEscena(){
-static GLfloat  pos[4] = { 5.0, 5.0, 10.0, 0.0 };	// Posicion de la fuente de luz
- 
-
-  float  color[4] = { 0.8, 0.0, 0, 0 };
-  float  color2[4] = { 1, 1, 1, 1 };
-
+void dibujoEscena(){
+  static GLfloat  pos[4] = { 5.0, 5.0, 10.0, 0.0 };	// Posicion de la fuente de luz
   float  color3[4] = { 0.8, 0.0, 1, 1 };
   float  color4[4] = { 0, 1, 0, 1 };
   float  color5[4] = { 1, 0, 0, 1 };
+
   glPushMatrix ();		// Apila la transformacion geometrica actual
-
   glClearColor (0.0, 0.0, 0.0, 1.0);	// Fija el color de fondo a negro
-
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Inicializa el buffer de color y el Z-Buffer
-
   transformacionVisualizacion ();	// Carga transformacion de visualizacion
-
   glLightfv (GL_LIGHT0, GL_POSITION, pos);	// Declaracion de luz. Colocada aqui esta fija en la escena
 
-
   ejesCoordenadas.draw();			// Dibuja los ejes
+
+  if(cambio){
+    cambio=false;
+    glMatrixMode (GL_PROJECTION);
+    glLoadIdentity ();
+    fijaProyeccion();
+  }
+
+
 
   //Pintamos Beethoven1
   glPushMatrix();
   glMaterialfv (GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color3);
-  glTranslatef(0,0.0,0.0);
+  glTranslatef(0,0.0,-10.0);
   glShadeModel(GL_SMOOTH);
   m1.draw3();
   glPopMatrix();
@@ -610,10 +623,44 @@ static GLfloat  pos[4] = { 5.0, 5.0, 10.0, 0.0 };	// Posicion de la fuente de lu
 
 }
 
+// x e y  son el pixel a leer, width y height son el el ancho y el alto del area a leer (en nuestro caso 1,1),
+// format el formato a leer (coincide con el format del buffer, GL_RGB o GL_RGBA), type es el tipo de dato almacenado en cada pixel
+// puede ser GL_UNSIGNED_BY T E de 0 a 255, o GL_FLOAT de 0.0 a 1.0, y pixel es el array de los pixels q leamos
+
+//void glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid * pixels);
+
+int pick(int x, int y, int * i){
+  GLint viewport [4];
+  unsigned char data[4];
+  glGetIntegerv(GL_VIEWPORT, viewport);
+  glDisable(GL_DITHER);
+  glDisable(GL_LIGHTING);
+  dibujoEscena();
+  glEnable(GL_LIGHTING);
+  glEnable(GL_DITHER);
+  glFlush();
+  glFinish();
+  glReadPixels(x, viewport[3]-y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, data);
+  *i=data[0];
+  glutPostRedisplay();
+  return *i;
+}
+
+void ColorSeleccion(int i, int componente){
+  unsigned char r=(i & 0xFF);
+  unsigned char g=(componente & 0xFF);
+  glColor3ub(r, g, 0);
+}
+
+void juntar(int x, int y){
+  int id;
+  pick(x, y, & id);
+  ColorSeleccion(id, 0);
+}
 
 void Dibuja (void){
-  dibujaEscena();  
-  glutSwapBuffers ();		// Intercambia el buffer de dibujo y visualizacion
+  dibujoEscena();  
+  glutSwapBuffers();		// Intercambia el buffer de dibujo y visualizacion
 }
 
 

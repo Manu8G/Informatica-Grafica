@@ -64,6 +64,8 @@ void clickRaton (int boton, int estado, int x, int y){
 			MOVIENDO_CAMARA=false;
 			reset=true;
 		}
+	}else if(boton == GLUT_LEFT_BUTTON){
+		juntar(x, y);
 	}
 }
 

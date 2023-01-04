@@ -31,6 +31,7 @@
 	Funcion de redibujado. Se ejecuta con los eventos postRedisplay
 **/
 void Dibuja (void);
+void setCambio();
 
 /**
 	Funcion de fondo
@@ -44,6 +45,7 @@ void initModel ();
 
 void cambiarLuz(int num);
 
+void juntar(int x, int y);
 
 class Objeto3D 
 { 
