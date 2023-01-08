@@ -189,21 +189,21 @@ void especial (int k, int x, int y)
       CZ += 5.0;
       break;
     case GLUT_KEY_F1:	//Vista planta
-      rotxCamara = 90, rotyCamara = 0; //CX=0; CZ=25;
+      rotxCamara = 90, rotyCamara = 0; CX=0; CZ=25;
       if(orto==true){
         cambio1=true;
       }
       orto=false;
       break;
     case GLUT_KEY_F2:	//Vista alzado
-      rotxCamara = 0, rotyCamara = -90; //CX=0; CZ=25;
+      rotxCamara = 0, rotyCamara = -90; CX=0; CZ=25;
       if(orto==true){
         cambio1=true;
       }
       orto=false;
       break;
     case GLUT_KEY_F3:	//Vista perfil
-      rotxCamara = 0, rotyCamara = 0; //CX=0; CZ=25;
+      rotxCamara = 0, rotyCamara = 0; CX=0; CZ=25;
       if(orto==false){
         cambio1=true;
       }

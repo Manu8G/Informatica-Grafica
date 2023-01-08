@@ -69,17 +69,6 @@ void clickRaton (int boton, int estado, int x, int y){
 	}
 }
 
-
-/**	void RatonMovido( int x, int y )
-
-Procedimiento para gestionar los eventos de movimiento del raton.
-
-Argumentos:
-
-x,y: Posicion, en coordenadas de pantalla, en que se encuantra el cursor.
-
-**/
-
 void RatonMovido (int x, int y){
 	if(MOVIENDO_CAMARA){
 		//Girar la camara usando segun el vector(x−xant, y−yant);

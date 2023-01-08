@@ -128,10 +128,8 @@ void fijaProyeccion(){
 
   if(ortogonal==true){
     glOrtho( -1.2, 1.2, -calto*1.2, calto*1.2, 1.5, 1500);
-    cout<<"ahora orto"<<endl;
   }else{
     glFrustum (-1, 1, -calto, calto, 1.5, 1500);
-    cout<<"ahora frustum"<<endl;
   }
   
 
