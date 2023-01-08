@@ -659,30 +659,6 @@ void Dibuja (void)
   //glShadeModel(GL_SMOOTH);
   m3.draw3();
   glPopMatrix();
-
-  
-  
-/*
-  //Pintamos lata2
-  glPushMatrix();
-  //glScaled(3,3,3);
-  glTranslated(-2,0,0);
-  glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, c1.getId());
-  lata2.draw4();
-  glDisable(GL_TEXTURE_2D);
-  glPopMatrix();
-
-  //Pintamos lata3
-  glPushMatrix();
-  //glScaled(3,3,3);
-  glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, c1.getId());
-  lata3.draw4();
-  glDisable(GL_TEXTURE_2D);
-  glPopMatrix();
-  */
-  
   
   glPopMatrix ();		// Desapila la transformacion geometrica
 
